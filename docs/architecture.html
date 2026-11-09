@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Devin artifact kit" />
+    <title>Artifact</title>
+    <script>
+      // A network that blocks the kit's host (or hands back a block page for it) leaves the page blank; say so instead. Styled like the
+      // ds error alert card (ChatAlertCard variant="error", no bar), values hardcoded: the kit CSS is what failed.
+      function artifactKitFailed() {
+        function show() {
+          if (document.getElementById("artifact-kit-notice")) return;
+          document.documentElement.style.colorScheme = "light";
+          var notice = document.createElement("div");
+          notice.id = "artifact-kit-notice";
+          notice.setAttribute("role", "alert");
+          notice.style.cssText =
+            "box-sizing:border-box;display:flex;align-items:flex-start;gap:6px;max-width:960px;margin:0 auto;padding:32px 24px 0;" +
+            "font:13px/18px Inter,ui-sans-serif,system-ui,sans-serif;letter-spacing:-0.005em;color:rgb(25 25 25)";
+          var ns = "http://www.w3.org/2000/svg";
+          var icon = document.createElementNS(ns, "svg");
+          icon.setAttribute("viewBox", "0 0 24 24");
+          icon.setAttribute("fill", "rgb(245 59 58)");
+          icon.setAttribute("aria-hidden", "true");
+          icon.style.cssText = "width:14px;height:14px;flex-shrink:0;margin-top:2px";
+          var path = document.createElementNS(ns, "path");
+          path.setAttribute("fill-rule", "evenodd");
+          path.setAttribute("clip-rule", "evenodd");
+          path.setAttribute(
+            "d",
+            "M12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2ZM12 15C11.4477 15 11 15.4477 11 16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16C13 15.4477 12.5523 15 12 15ZM12 7C11.5858 7 11.25 7.33579 11.25 7.75V12.25C11.25 12.6642 11.5858 13 12 13C12.4142 13 12.75 12.6642 12.75 12.25V7.75C12.75 7.33579 12.4142 7 12 7Z"
+          );
+          icon.appendChild(path);
+          var text = document.createElement("span");
+          text.textContent = "This page could not load Devin's artifact kit.";
+          notice.appendChild(icon);
+          notice.appendChild(text);
+          document.body.prepend(notice);
+        }
+        if (document.body) show();
+        else document.addEventListener("DOMContentLoaded", show);
+      }
+    </script>
+    <link rel="stylesheet" href="https://static.devin.ai/artifact-kit/7088248ad1842d99/ds-kit.css" onerror="artifactKitFailed()" />
+    <style>
+    .flex {
+        display: flex
+    }
+    .table {
+        display: table
+    }
+    .grid {
+        display: grid
+    }
+    .w-\[150px\] {
+        width: 150px
+    }
+    .w-\[210px\] {
+        width: 210px
+    }
+    .w-full {
+        width: 100%
+    }
+    .table-fixed {
+        table-layout: fixed
+    }
+    .grid-cols-5 {
+        grid-template-columns: repeat(5, minmax(0, 1fr))
+    }
+    .flex-col {
+        flex-direction: column
+    }
+    .flex-wrap {
+        flex-wrap: wrap
+    }
+    .items-center {
+        align-items: center
+    }
+    .justify-between {
+        justify-content: space-between
+    }
+    .gap-1 {
+        gap: 0.25rem
+    }
+    .gap-2 {
+        gap: 0.5rem
+    }
+    .gap-3 {
+        gap: 0.75rem
+    }
+    .gap-6 {
+        gap: 1.5rem
+    }
+    .whitespace-normal {
+        white-space: normal
+    }
+    .whitespace-nowrap {
+        white-space: nowrap
+    }
+    .break-words {
+        overflow-wrap: break-word
+    }
+    .font-mono {
+        font-family: var(--font-code, Devin Mono), SF Mono, Roboto Mono, ui-monospace, monospace
+    }
+    .text-secondary {
+        color: rgb(var(--text-secondary))
+    }
+    .filter {
+        filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)
+    }
+    @keyframes enter {
+        from {
+            opacity: var(--tw-enter-opacity, 1);
+            transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0) scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1)) rotate(var(--tw-enter-rotate, 0))
+        }
+    }
+    @keyframes exit {
+        to {
+            opacity: var(--tw-exit-opacity, 1);
+            transform: translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0) scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1)) rotate(var(--tw-exit-rotate, 0))
+        }
+    }
+    </style>
+  </head>
+  <body>
+    <script src="https://static.devin.ai/artifact-kit/7088248ad1842d99/ds-kit.js" onerror="artifactKitFailed()"></script>
+    <script>
+      if (!window.DS) artifactKitFailed();
+    </script>
+    <main data-artifact-shell class="mx-auto flex max-w-[960px] flex-col gap-6 px-6 py-8">
+<div id="root"></div>
+<script>DSRun("\n// Update STATUS and node fields as slices land. Statuses: done, skeleton, scaffold, planned.\nconst STATUS = {\n  done: { label: \"Done\", variant: \"success\" },\n  skeleton: { label: \"Skeleton\", variant: \"warning\" },\n  scaffold: { label: \"Scaffold only\", variant: \"blue\" },\n  planned: { label: \"Planned\", variant: \"default\" },\n};\n\nconst groups = [\n  { id: \"data\", label: \"data on disk\" },\n  { id: \"startup\", label: \"server: once at startup\" },\n  { id: \"request\", label: \"server: per request\" },\n  { id: \"shared\", label: \"shared\" },\n  { id: \"web\", label: \"browser\" },\n];\n\nconst nodes = [\n  { id: \"json\", group: \"data\", title: \"ledger.json\", sub: \"amounts are strings\", file: \"ledger.json\", status: \"done\", slice: 0,\n    signature: \"{ company, currency, accounts[], journal_entries[] }\",\n    io: \"Raw data: chart of accounts plus journal entries with debit/credit strings like \\\"12450.75\\\".\",\n    detail: \"Never edited by code. Draft and void entries stay in the file; the statement filters them out.\" },\n  { id: \"index\", group: \"startup\", title: \"index.ts\", sub: \"boot + listen :3001\", file: \"server/src/index.ts\", status: \"scaffold\", slice: 3,\n    signature: \"createApp(readLedgerFile(path)).listen(PORT)\",\n    io: \"Reads the ledger once, hands the validated Ledger to the Express app.\",\n    detail: \"Today it starts the app without a ledger. Slice 3 wires readLedgerFile in, so a bad ledger fails at boot, not on a request.\" },\n  { id: \"read\", group: \"startup\", title: \"readLedgerFile\", sub: \"ledger.ts: file I/O\", file: \"server/src/ledger.ts\", status: \"done\", slice: 1,\n    signature: \"readLedgerFile(path: string | URL): Ledger\",\n    io: \"Path -> file text -> JSON.parse -> unknown -> loadLedger.\",\n    detail: \"Thin glue. All checking happens in loadLedger.\" },\n  { id: \"load\", group: \"startup\", title: \"loadLedger\", sub: \"ledger.ts: validate\", file: \"server/src/ledger.ts\", status: \"done\", slice: 1,\n    signature: \"loadLedger(raw: unknown): Ledger  // throws LedgerError\",\n    io: \"Raw JSON -> typed Ledger: accounts Map keyed by number, entries with bigint debit/credit.\",\n    detail: \"Checks: known type/subtype/status, real YYYY-MM-DD dates, unique ids, lines reference real accounts, one side non-zero, debits = credits. Also checks each type fits its subtype (no asset filed as cogs). Draft and void entries are validated too. 17 tests.\" },\n  { id: \"parse\", group: \"startup\", title: \"parseMoney\", sub: \"money.ts: string -> bigint\", file: \"server/src/money.ts\", status: \"done\", slice: 1,\n    signature: \"parseMoney(text: string): Money  // Money = bigint cents\",\n    io: \"\\\"12450.75\\\" -> 1245075n. Rejects \\\"12.5\\\", \\\"1,000.00\\\", \\\"-5.00\\\", \\\"1e3\\\".\",\n    detail: \"Regex /^(\\\\d+)\\\\.(\\\\d{2})$/ then BigInt(whole) * 100n + BigInt(cents). No float ever touches an amount. Tested past Number.MAX_SAFE_INTEGER.\" },\n  { id: \"dates\", group: \"startup\", title: \"isIsoDate\", sub: \"dates.ts: real YYYY-MM-DD?\", file: \"server/src/dates.ts\", status: \"done\", slice: 1,\n    signature: \"isIsoDate(text: unknown): text is string\",\n    io: \"\\\"2026-02-28\\\" -> true; \\\"2026-1-5\\\", \\\"2026-02-30\\\" -> false.\",\n    detail: \"Regex for the shape, then a UTC round-trip through Date to check the day exists. The only place Date is used. parsePeriod will reuse it in slice 3.\" },\n  { id: \"app\", group: \"request\", title: \"app.ts\", sub: \"GET /income-statement\", file: \"server/src/app.ts\", status: \"scaffold\", slice: 3,\n    signature: \"createApp(ledger: Ledger): Express\",\n    io: \"?start=YYYY-MM-DD&end=YYYY-MM-DD -> 200 IncomeStatement JSON, or 400 { error }.\",\n    detail: \"Only /health exists today. The route stays thin: parse the period, call incomeStatement, send JSON.\" },\n  { id: \"period\", group: \"request\", title: \"parsePeriod\", sub: \"period.ts: validate dates\", file: \"server/src/period.ts\", status: \"planned\", slice: 3,\n    signature: \"parsePeriod(start?: string, end?: string): Period | error\",\n    io: \"Query strings -> { start, end } as YYYY-MM-DD strings, start <= end.\",\n    detail: \"Rejects 2026-02-30 and 2026-1-5. Dates stay strings and compare as strings; Date is used only for the real-date check.\" },\n  { id: \"core\", group: \"request\", title: \"incomeStatement\", sub: \"pure accounting core\", file: \"server/src/incomeStatement.ts\", status: \"done\", slice: 2,\n    signature: \"incomeStatement(ledger: Ledger, period: Period): Statement  // bigint amounts\",\n    io: \"Ledger + period -> sections with per-account bigint totals, plus gross profit, operating income, net income.\",\n    detail: \"Keeps posted entries dated start..end inclusive. Revenue = credit - debit, expense = debit - credit. A SECTIONS table maps each subtype to its section. Each line is signed toward its section (normal: credit or debit), so contra revenue and expense credits come out negative. Zero-activity accounts still get a 0.00 line. Balance-sheet accounts are skipped. No HTTP, no I/O.\" },\n  { id: \"format\", group: \"request\", title: \"toIncomeStatementResponse\", sub: \"bigint -> strings via formatMoney\", file: \"server/src/incomeStatement.ts\", status: \"done\", slice: 2,\n    signature: \"toIncomeStatementResponse(statement: Statement): IncomeStatement\",\n    io: \"Runs formatMoney on every amount: -4448014n -> \\\"-44480.14\\\". No commas or parentheses.\",\n    detail: \"Kept separate from incomeStatement so tests can do exact bigint math (additivity, invariants). Amounts leave the server as strings because JSON numbers become floats in the browser.\" },\n  { id: \"types\", group: \"shared\", title: \"shared/types.ts\", sub: \"IncomeStatement type\", file: \"shared/types.ts\", status: \"done\", slice: 2,\n    signature: \"{ company, currency, period, sections[], summary }\",\n    io: \"One response type imported by both server and web, so they can't drift apart.\",\n    detail: \"sections[] holds { key, label, lines[{ account, name, amount }], total }. summary holds gross_profit, operating_income, net_income.\" },\n  { id: \"api\", group: \"web\", title: \"api.ts\", sub: \"typed fetch\", file: \"web/src/api.ts\", status: \"planned\", slice: 4,\n    signature: \"fetchIncomeStatement(start, end): Promise<IncomeStatement>\",\n    io: \"Calls /api/income-statement through the Vite proxy (5173 -> 3001).\",\n    detail: \"Turns a 400 into a readable error for the page.\" },\n  { id: \"appui\", group: \"web\", title: \"App.tsx\", sub: \"date inputs\", file: \"web/src/App.tsx\", status: \"scaffold\", slice: 4,\n    signature: \"<App />\",\n    io: \"Two <input type=\\\"date\\\"> fields (default Q1 2026) -> api.ts -> state.\",\n    detail: \"Today it only pings /api/health.\" },\n  { id: \"table\", group: \"web\", title: \"StatementTable.tsx\", sub: \"render only\", file: \"web/src/StatementTable.tsx\", status: \"planned\", slice: 4,\n    signature: \"<StatementTable statement={...} />\",\n    io: \"Loops over sections; \\\"-44480.14\\\" displays as (44,480.14).\",\n    detail: \"No accounting in the browser: it formats the strings it receives.\" },\n];\n\nconst edges = [\n  { from: \"index\", to: \"read\", label: \"at boot\" },\n  { from: \"json\", to: \"read\", label: \"file text\" },\n  { from: \"read\", to: \"load\", label: \"unknown JSON\" },\n  { from: \"parse\", to: \"load\", label: \"bigint cents\", dim: true },\n  { from: \"dates\", to: \"load\", label: \"date check\", dim: true },\n  { from: \"load\", to: \"core\", label: \"Ledger\" },\n  { from: \"index\", to: \"app\", label: \"createApp(ledger)\", dim: true },\n  { from: \"appui\", to: \"api\", label: \"start, end\" },\n  { from: \"api\", to: \"app\", label: \"GET /api/income-statement\" },\n  { from: \"app\", to: \"period\", label: \"query strings\" },\n  { from: \"period\", to: \"core\", label: \"Period\" },\n  { from: \"core\", to: \"format\", label: \"bigint totals\" },\n  { from: \"format\", to: \"types\", label: \"JSON strings\" },\n  { from: \"types\", to: \"table\", label: \"IncomeStatement\" },\n];\n\nconst moneyTrail = [\n  { where: \"ledger.json\", value: \"\\\"12450.75\\\"\", note: \"string in the file\" },\n  { where: \"parseMoney\", value: \"1245075n\", note: \"bigint cents\" },\n  { where: \"incomeStatement\", value: \"-4448014n\", note: \"Q1 net income, summed exactly\" },\n  { where: \"toIncomeStatementResponse\", value: \"\\\"-44480.14\\\"\", note: \"string on the wire\" },\n  { where: \"StatementTable\", value: \"(44,480.14)\", note: \"what the user sees\" },\n];\n\nfunction StatusBadge({ status }) {\n  const s = STATUS[status];\n  return React.createElement(Badge, { variant: s.variant, size: \"sm\",}, s.label);\n}\n\nfunction Architecture() {\n  const [picked, setPicked] = useState(\"core\");\n  const [zoom, setZoom] = useState(1);\n  const node = nodes.find((n) => n.id === picked);\n  const counts = Object.keys(STATUS).map((k) => [k, nodes.filter((n) => n.status === k).length]);\n  return (\n    React.createElement(PageLayout, {\n      title: \"Income statement: data flow\"   ,\n      subtitle: \"How ledger.json becomes the statement on screen, and how far each piece is built.\"             ,}\n\n      , React.createElement('div', { className: \"flex flex-col gap-6\"  ,}\n        , React.createElement('div', { className: \"flex flex-wrap items-center justify-between gap-3\"    ,}\n          , React.createElement('div', { className: \"flex flex-wrap items-center gap-3\"   ,}\n            , counts.map(([k, c]) => (\n              React.createElement('span', { key: k, className: \"flex items-center gap-1\"  ,}, React.createElement(StatusBadge, { status: k,} ), React.createElement(Text, { size: 12, className: \"text-secondary\",}, c))\n            ))\n          )\n          , React.createElement(ZoomControls, { value: zoom, onValueChange: setZoom,} )\n        )\n\n        , React.createElement(ZoomArea, { zoom: zoom,}\n          , React.createElement(Diagram, {\n            direction: \"TB\",\n            groups: groups,\n            nodes: nodes.map((n) => ({ id: n.id, group: n.group, title: n.title, sub: `${n.sub} · ${STATUS[n.status].label}`, selected: n.id === picked })),\n            edges: edges,\n            onNodeClick: setPicked,}\n          )\n        )\n\n        , node && (\n          React.createElement(CardContent, null\n            , React.createElement(CardBody, null\n              , React.createElement('div', { className: \"flex flex-col gap-2\"  ,}\n                , React.createElement('div', { className: \"flex flex-wrap items-center gap-2\"   ,}\n                  , React.createElement(Text, { size: 15, weight: \"semibold\",}, node.title)\n                  , React.createElement(StatusBadge, { status: node.status,} )\n                  , React.createElement(MonoChip, null, node.file)\n                  , React.createElement(Text, { size: 12, className: \"text-secondary\",}, \"slice \" , node.slice)\n                )\n                , React.createElement(CodeBlock, { code: node.signature,} )\n                , React.createElement(Text, { size: 13,}, node.io)\n                , React.createElement(Text, { size: 13, className: \"text-secondary\",}, node.detail)\n              )\n            )\n          )\n        )\n\n        , React.createElement('div', { className: \"flex flex-col gap-2\"  ,}\n          , React.createElement(Text, { size: 15, weight: \"semibold\",}, \"One amount through the pipeline\"    )\n          , React.createElement(Text, { size: 13, className: \"text-secondary\",}, \"Money is a bigint from parse to format; it is never a JS number.\"             )\n          , React.createElement('div', { className: \"grid grid-cols-5 gap-2\"  ,}\n            , moneyTrail.map((step, i) => (\n              React.createElement(CardContent, { key: step.where,}\n                , React.createElement(CardBody, null\n                  , React.createElement('div', { className: \"flex flex-col gap-1\"  ,}\n                    , React.createElement(Text, { size: 11, className: \"text-secondary\",}, i + 1, \". \" , step.where)\n                    , React.createElement(Text, { size: 14, weight: \"semibold\", className: \"font-mono\",}, step.value)\n                    , React.createElement(Text, { size: 11, className: \"text-secondary\",}, step.note)\n                  )\n                )\n              )\n            ))\n          )\n        )\n\n        , React.createElement('div', { className: \"flex flex-col gap-2\"  ,}\n          , React.createElement(Text, { size: 15, weight: \"semibold\",}, \"Modules\")\n          , React.createElement(Table, { rowLines: true, tableClassName: \"w-full table-fixed\" ,}\n            , React.createElement(TableHeader, null\n              , React.createElement(TableRow, null\n                , React.createElement(TableHead, { className: \"w-[210px]\",}, \"Function / file\"  )\n                , React.createElement(TableHead, null, \"Input to output\"  )\n                , React.createElement(TableHead, { className: \"w-[150px]\",}, \"Slice / status\"  )\n              )\n            )\n            , React.createElement(TableBody, null\n              , nodes.map((n) => (\n                React.createElement(TableRow, { key: n.id,}\n                  , React.createElement(TableCell, null, React.createElement('div', { className: \"flex flex-col\" ,}, React.createElement(Text, { size: 13, weight: \"medium\",}, n.title), React.createElement(Text, { size: 11, className: \"text-secondary font-mono\" ,}, n.file)))\n                  , React.createElement(TableCell, null, React.createElement('div', { className: \"whitespace-normal break-words\" ,}, React.createElement(Text, { size: 12,}, n.io)))\n                  , React.createElement(TableCell, null, React.createElement('div', { className: \"flex items-center gap-2 whitespace-nowrap\"   ,}, React.createElement(Text, { size: 12,}, n.slice), React.createElement(StatusBadge, { status: n.status,} )))\n                )\n              ))\n            )\n          )\n        )\n      )\n      , React.createElement(Footnote, null, \"Status after slice 2: money, ledger loading and the statement core are implemented; 61 server tests pass, including the golden Q1 statement. The HTTP route and UI come in slices 3 and 4. Planned files follow docs/SPEC.md section 5.\"                                      )\n    )\n  );\n}\nrender(React.createElement(Architecture, null ));\n")</script>
+    </main>
+  </body>
+</html>

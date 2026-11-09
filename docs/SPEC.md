@@ -66,8 +66,8 @@ Computed independently with a throwaway Decimal script. Check it by hand before 
 | **Net income** | **(44,480.14)** |
 
 Wrong answers the tests should catch: including JE-009 adds 8,200 to revenue, including
-JE-019 adds 5,000 to salaries, an exclusive end date drops all the 03-31 activity, and a
-float sum makes 1,199.97 - 100 come out as 1,099.9699999.
+JE-019 adds 5,000 to salaries, an exclusive end date drops all the 03-31 activity, and
+float math gives a Q1 net income of -44480.14000000001.
 
 ## 4. Response shape
 

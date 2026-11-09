@@ -3,6 +3,16 @@
 2026.01.01 to 2026.3.31
 
 ## Decisions & Assumptions
+Money:
+- Use bigint for exact arithmetic
+- Parse amounts into cents and format back to decimal strings
+- No floating-point rounding errors
+- Assumption: All amounts are non-negative and have exactly two decimal places
+
+Date:
+- Use string comparison for dates (e.g., "2026-01-01" < "2026-03-31")
+- Parse dates into YYYY-MM-DD format
+- No timezone conversion needed
 
 ## Verifcation process
 
@@ -11,13 +21,13 @@
 - 
 
 ### Did not help with
-- 
+- Wanted to use JS Date objects but realized that would introduce too much complexity when it is simpler to just use string comparison, a date is expected to be in YYYY-MM-DD format, which can be easily compared
 
 ## General Process steps
 1. Read the problem and understand the requirements
 2. Invoke AI to help with implementation
     - Gather context files and use Devin IDE + pstack skills library
-    - review mainspec and make major architectural decisions
+    - review mainspec and make key architectural decisions
 3. 
 
 ## Next steps
