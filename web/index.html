@@ -4,6 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Income statement</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 2rem auto; max-width: 40rem; padding: 0 1rem; color: #222; }
+      form { display: flex; gap: 1rem; align-items: end; margin-bottom: 1.5rem; }
+      label { display: flex; flex-direction: column; font-size: 0.85rem; gap: 0.25rem; }
+      .error { color: #b00020; }
+      .statement { width: 100%; border-collapse: collapse; }
+      .statement caption { text-align: left; color: #666; padding-bottom: 0.75rem; }
+      .statement td, .statement th { padding: 0.3rem 0.5rem; }
+      .section-header th { text-align: left; padding-top: 1rem; }
+      .name { padding-left: 1.5rem !important; }
+      .account { color: #888; font-size: 0.85em; margin-right: 0.5rem; }
+      .amount { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+      .total td { font-weight: 600; border-top: 1px solid #ccc; }
+      .summary td { font-weight: 700; background: #f4f4f4; }
+      .net td { border-top: 1px solid #222; border-bottom: 3px double #222; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
