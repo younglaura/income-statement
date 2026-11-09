@@ -3,7 +3,9 @@
 2026.01.01 to 2026.3.31
 
 ### Expected Output
+44,480.14
 ### Actual Output
+44,480.14
 
 ## Decisions & Assumptions
 Money:
@@ -17,8 +19,15 @@ Date:
 - Parse dates into YYYY-MM-DD format
 - No timezone conversion needed
 
+Inactive accounts:
+- is_active does not impact if journal entries are included in the report, if the journal entry is posted then it occured before the account was deactivated
+- is_active only controls whether new entries can be posted, and that check belongs where entries are created, not in the report. Hiding posted history would understate expenses/revenue without anyone noticing (e.g. dropping 6300 Marketing (legacy) would change Q1 net income from (44,480.14) to (41,980.04))
+- Considered excluding entries dated today on inactive accounts, but decided against it: the report would change depending on the day it runs, and a backdated entry would get past the check anyway
+- Limitation: the ledger has no deactivation date, so a posting made after an account was closed can't be detected
+- Tested by the golden Q1 test (6300) and "still reports posted activity on an inactive account"
+
 ## Verifcation process
-Used AI to parse into CSV format, pasted this in google sheets and compared with UI to see that the data was being parsed correctly.
+Looked through the JSON and UI to see that the data was being parsed correctly.
 
 
 ## AI Usage
@@ -60,7 +69,7 @@ Money and dates:
 - A branded `IsoDate` type so the type system knows a string has already been validated.
 
 Robustness:
-- Only allow postings to inactive accounts in entries dated before the account was deactivated, or at least warn (right now they load without any check, which matches the "history still reports" rule).
+- Add an optional `deactivated_on` date to accounts, then either reject posted entries dated on/after it in `loadLedger` or keep them and return a warnings list for the UI. Optionally tag inactive accounts as "(inactive)" in the table.
 - Decide whether amounts like `"0100.00"` (leading zeros) should be rejected. They are accepted today and equal 100.00.
 - Ignore stale responses in `App.tsx` when Run report is clicked twice quickly (a request id or `AbortController`).
 - UI behavior tests (loads Q1 on open, Run report, shows the error message) with `jsdom` + `@testing-library/react`. The table rendering and `api.ts` are already tested.
