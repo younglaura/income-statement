@@ -58,34 +58,8 @@ export interface Ledger {
   entries: JournalEntry[];
 }
 
-interface RawLedger {
-  company: string;
-  currency: string;
-  accounts: RawAccount[];
-  journal_entries: RawEntry[];
-}
-
-interface RawAccount {
-  number: string;
-  name: string;
-  type: string;
-  subtype: string;
-  is_active: boolean;
-}
-
-interface RawEntry {
-  id: string;
-  date: string;
-  status: string;
-  memo: string;
-  lines: RawLine[];
-}
-
-interface RawLine {
-  account: string;
-  debit: string;
-  credit: string;
-}
+/** The JSON as stored. Fields are unknown until checked: the file is outside the type system. */
+type RawObject = Record<string, unknown>;
 
 export class LedgerError extends Error {
   override name = "LedgerError";
@@ -97,32 +71,37 @@ export class LedgerError extends Error {
  * are validated too: they stay in the ledger, so bad data in them is still bad data.
  */
 export function loadLedger(raw: unknown): Ledger {
-  const data = raw as RawLedger;
-  if (!data || !Array.isArray(data.accounts) || !Array.isArray(data.journal_entries)) {
+  if (!isObject(raw) || !Array.isArray(raw.accounts) || !Array.isArray(raw.journal_entries)) {
     throw new LedgerError("ledger must have accounts and journal_entries arrays");
   }
+  const company = requireString(raw.company, "ledger company");
+  const currency = requireString(raw.currency, "ledger currency");
 
   const accounts = new Map<string, Account>();
-  for (const rawAccount of data.accounts) {
-    const account = toAccount(rawAccount);
+  raw.accounts.forEach((rawAccount, i) => {
+    const account = toAccount(rawAccount, `account #${i + 1}`);
     if (accounts.has(account.number)) {
       throw new LedgerError(`duplicate account number ${account.number}`);
     }
     accounts.set(account.number, account);
-  }
-
-  const seenIds = new Set<string>();
-  const entries = data.journal_entries.map((rawEntry) => {
-    if (seenIds.has(rawEntry.id)) throw new LedgerError(`duplicate entry id ${rawEntry.id}`);
-    seenIds.add(rawEntry.id);
-    return toEntry(rawEntry, accounts);
   });
 
-  return { company: data.company, currency: data.currency, accounts, entries };
+  const seenIds = new Set<string>();
+  const entries = raw.journal_entries.map((rawEntry, i) => {
+    const entry = toEntry(rawEntry, `entry #${i + 1}`, accounts);
+    if (seenIds.has(entry.id)) throw new LedgerError(`duplicate entry id ${entry.id}`);
+    seenIds.add(entry.id);
+    return entry;
+  });
+
+  return { company, currency, accounts, entries };
 }
 
-function toAccount(raw: RawAccount): Account {
-  const where = `account ${raw.number}`;
+function toAccount(raw: unknown, position: string): Account {
+  if (!isObject(raw)) throw new LedgerError(`${position} must be an object`);
+  const number = requireString(raw.number, `${position} number`);
+  const where = `account ${number}`;
+  const name = requireString(raw.name, `${where} name`);
   if (!isOneOf(ACCOUNT_TYPES, raw.type)) throw new LedgerError(`${where}: unknown type ${JSON.stringify(raw.type)}`);
   if (!isOneOf(ACCOUNT_SUBTYPES, raw.subtype)) {
     throw new LedgerError(`${where}: unknown subtype ${JSON.stringify(raw.subtype)}`);
@@ -130,13 +109,19 @@ function toAccount(raw: RawAccount): Account {
   if (!TYPES_FOR_SUBTYPE[raw.subtype].includes(raw.type)) {
     throw new LedgerError(`${where}: type ${raw.type} cannot have subtype ${raw.subtype}`);
   }
-  return { number: raw.number, name: raw.name, type: raw.type, subtype: raw.subtype, isActive: raw.is_active };
+  if (typeof raw.is_active !== "boolean") {
+    throw new LedgerError(`${where}: is_active must be true or false, got ${JSON.stringify(raw.is_active)}`);
+  }
+  return { number, name, type: raw.type, subtype: raw.subtype, isActive: raw.is_active };
 }
 
-function toEntry(raw: RawEntry, accounts: Map<string, Account>): JournalEntry {
-  const where = `entry ${raw.id}`;
+function toEntry(raw: unknown, position: string, accounts: Map<string, Account>): JournalEntry {
+  if (!isObject(raw)) throw new LedgerError(`${position} must be an object`);
+  const id = requireString(raw.id, `${position} id`);
+  const where = `entry ${id}`;
   if (!isOneOf(ENTRY_STATUSES, raw.status)) throw new LedgerError(`${where}: unknown status ${JSON.stringify(raw.status)}`);
   if (!isIsoDate(raw.date)) throw new LedgerError(`${where}: invalid date ${JSON.stringify(raw.date)}, expected YYYY-MM-DD`);
+  const memo = requireString(raw.memo, `${where} memo`, { allowEmpty: true });
   if (!Array.isArray(raw.lines) || raw.lines.length < 2) throw new LedgerError(`${where}: needs at least two lines`);
 
   const lines = raw.lines.map((line, i) => toLine(line, `${where} line ${i + 1}`, accounts));
@@ -145,25 +130,39 @@ function toEntry(raw: RawEntry, accounts: Map<string, Account>): JournalEntry {
   const credits = lines.reduce((sum, l) => sum + l.credit, ZERO);
   if (debits !== credits) throw new LedgerError(`${where}: debits do not equal credits`);
 
-  return { id: raw.id, date: raw.date, status: raw.status, memo: raw.memo, lines };
+  return { id, date: raw.date, status: raw.status, memo, lines };
 }
 
-function toLine(raw: RawLine, where: string, accounts: Map<string, Account>): JournalLine {
-  if (!accounts.has(raw.account)) throw new LedgerError(`${where}: unknown account ${JSON.stringify(raw.account)}`);
-  const debit = toMoney(raw.debit, where);
-  const credit = toMoney(raw.credit, where);
+function toLine(raw: unknown, where: string, accounts: Map<string, Account>): JournalLine {
+  if (!isObject(raw)) throw new LedgerError(`${where} must be an object`);
+  const account = requireString(raw.account, `${where} account`);
+  if (!accounts.has(account)) throw new LedgerError(`${where}: unknown account ${JSON.stringify(account)}`);
+  const debit = toMoney(raw.debit, `${where} debit`);
+  const credit = toMoney(raw.credit, `${where} credit`);
   if ((debit === ZERO) === (credit === ZERO)) {
     throw new LedgerError(`${where}: exactly one of debit or credit must be non-zero`);
   }
-  return { account: raw.account, debit, credit };
+  return { account, debit, credit };
 }
 
-function toMoney(text: string, where: string): Money {
+function toMoney(value: unknown, what: string): Money {
+  const text = requireString(value, what);
   try {
     return parseMoney(text);
   } catch (err) {
-    throw new LedgerError(`${where}: ${(err as Error).message}`);
+    throw new LedgerError(`${what}: ${(err as Error).message}`);
   }
+}
+
+function requireString(value: unknown, what: string, { allowEmpty = false } = {}): string {
+  if (typeof value !== "string" || (!allowEmpty && value === "")) {
+    throw new LedgerError(`${what} must be a ${allowEmpty ? "" : "non-empty "}string, got ${JSON.stringify(value)}`);
+  }
+  return value;
+}
+
+function isObject(value: unknown): value is RawObject {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function isOneOf<T extends string>(allowed: readonly T[], value: unknown): value is T {

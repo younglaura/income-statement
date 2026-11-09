@@ -130,6 +130,17 @@ describe("which entries count", () => {
     const ledger = ledgerOf(sale("JE-1", "2026-03-30", "1.00"), sale("JE-2", "2026-03-31", "100.00"));
     expect(amountOf(incomeStatement(ledger, { start: "2026-03-31", end: "2026-03-31" }), "4000")).toBe("100.00");
   });
+
+  it("still reports posted activity on an inactive account", () => {
+    const ledger = loadLedger({
+      company: "Test Co",
+      currency: "USD",
+      accounts: TEST_ACCOUNTS.map((a) => ({ ...a, is_active: a.number !== "6200" })),
+      journal_entries: [entry("old bill", "2026-01-10", [["6200", "25.00", "0.00"], ["1000", "0.00", "25.00"]])],
+    });
+    expect(ledger.accounts.get("6200")!.isActive).toBe(false);
+    expect(amountOf(incomeStatement(ledger, Q1), "6200")).toBe("25.00");
+  });
 });
 
 describe("signs", () => {

@@ -2,6 +2,9 @@
 
 2026.01.01 to 2026.3.31
 
+### Expected Output
+### Actual Output
+
 ## Decisions & Assumptions
 Money:
 - Use bigint for exact arithmetic
@@ -15,25 +18,62 @@ Date:
 - No timezone conversion needed
 
 ## Verifcation process
+Used AI to parse into CSV format, pasted this in google sheets and compared with UI to see that the data was being parsed correctly.
+
 
 ## AI Usage
+
 ### Helped with
-- 
+- Provided context and constraints, and asked for implementation guidance.
+- Used pstack skills library to propose architecture.
+- Asked for possible implementation options and chose the best one.
+
 
 ### Did not help with
 - Wanted to use JS Date objects but realized that would introduce too much complexity when it is simpler to just use string comparison, a date is expected to be in YYYY-MM-DD format, which can be easily compared
+- Originally ledger loader does not check types or missing fields, which could cause runtime errors
+- gaps in testing
+    - Needed to add more test cases to cover cases, ui tests, missing function coverage
 
 ## General Process steps
 1. Read the problem and understand the requirements
 2. Invoke AI to help with implementation
     - Gather context files and use Devin IDE + pstack skills library
     - review mainspec and make key architectural decisions
-3. 
+3. implement the slices gradually, testing as you go
+4. review all AI changes and done!
 
 ## Next steps
 
+Features (each should be a small change in one place):
+- Comparative periods (e.g. this quarter vs last quarter): call `incomeStatement` twice and add a variance column in the UI; no accounting changes.
+- Monthly columns: split the range into months and run `incomeStatement` per month. Additivity is already tested, so columns sum to the full period.
+- Drill-down: click an account line to see the journal entries behind it. Reuse the same posted + date filter from `netDebitsByAccount` and return the matching lines.
+- Toggle to include drafts (a "what if" view): add an `includeDrafts` option where `incomeStatement` filters by status.
+- Gross margin and operating margin %: these are ratios, not money, so calculate them with scaled bigint math and return a rounded string (no floats).
+- Balance sheet: same ledger, with `balance_sheet` accounts summed from the beginning of time up to an as-of date. Assets = Liabilities + Equity + net income to date would be the main test.
+- CSV export of the statement from the same response data.
+
+Money and dates:
+- Division and allocation helpers in `money.ts` if a feature needs them (`divRound` with one named rounding rule, `allocate` that hands out leftover cents so totals still balance).
+- Switch to `Temporal.PlainDate` if date math is needed (adding a month, prior period). Comparing strings is enough for now.
+- A branded `IsoDate` type so the type system knows a string has already been validated.
+
+Robustness:
+- Only allow postings to inactive accounts in entries dated before the account was deactivated, or at least warn (right now they load without any check, which matches the "history still reports" rule).
+- Decide whether amounts like `"0100.00"` (leading zeros) should be rejected. They are accepted today and equal 100.00.
+- Ignore stale responses in `App.tsx` when Run report is clicked twice quickly (a request id or `AbortController`).
+- UI behavior tests (loads Q1 on open, Run report, shows the error message) with `jsdom` + `@testing-library/react`. The table rendering and `api.ts` are already tested.
+- Show a clearer error in the UI when the server is down instead of "Request failed (502)".
+
+Out of scope for 2 hours, would matter in production:
+- A database instead of reading `ledger.json` at startup, plus reloading when the data changes.
+- Multiple currencies (the ledger has one `currency` field today).
+- Auth, deployment, logging.
+
 ## Metrics
-| --- | --- |
+| Metric | Description |
+|---|---|
 | Correctness | The numbers are right for any date range, not only the default one |
 | Money | Amounts stay exact. No floating-point rounding errors |
 | Tests | The tests would catch a real mistake in the accounting, not only a typo |

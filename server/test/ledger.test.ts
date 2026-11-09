@@ -141,4 +141,55 @@ describe("loadLedger validation", () => {
     raw.journal_entries[0]!.lines[1]!.credit = "99.99";
     expect(() => loadLedger(raw)).toThrow(/debits do not equal credits/);
   });
+
+  it("rejects an entry with exactly one line", () => {
+    const raw = validRaw();
+    raw.journal_entries[0]!.lines.pop();
+    expect(() => loadLedger(raw)).toThrow(/JE-1: needs at least two lines/);
+  });
+
+  it.each([
+    ["null", null],
+    ["an array", []],
+    ["no accounts array", { company: "T", currency: "USD", journal_entries: [] }],
+    ["no journal_entries array", { company: "T", currency: "USD", accounts: [] }],
+  ])("rejects a ledger that is %s", (_name, raw) => {
+    expect(() => loadLedger(raw)).toThrow(/ledger must have accounts and journal_entries arrays/);
+  });
+});
+
+describe("loadLedger field types (the JSON is outside the type system)", () => {
+  type Raw = ReturnType<typeof validRaw>;
+  type Field = Record<string, unknown>;
+  const account = (raw: Raw) => raw.accounts[1] as unknown as Field;
+  const entry = (raw: Raw) => raw.journal_entries[0] as unknown as Field;
+  const line = (raw: Raw) => raw.journal_entries[0]!.lines[0] as unknown as Field;
+
+  it.each<[string, (raw: Raw) => void, RegExp]>([
+    ["company missing", (raw) => delete (raw as Partial<Raw>).company, /ledger company must be a non-empty string/],
+    ["currency is a number", (raw) => ((raw as unknown as Field).currency = 840), /ledger currency must be a non-empty string, got 840/],
+    ["account number is a JSON number", (raw) => (account(raw).number = 4000), /account #2 number must be a non-empty string, got 4000/],
+    ["account number is empty", (raw) => (account(raw).number = ""), /account #2 number must be a non-empty string/],
+    ["account name missing", (raw) => delete account(raw).name, /account 4000 name must be a non-empty string/],
+    ["is_active missing", (raw) => delete account(raw).is_active, /account 4000: is_active must be true or false, got undefined/],
+    ["is_active is \"yes\"", (raw) => (account(raw).is_active = "yes"), /account 4000: is_active must be true or false, got "yes"/],
+    ["account is not an object", (raw) => ((raw.accounts as unknown[])[1] = "4000"), /account #2 must be an object/],
+    ["entry id missing", (raw) => delete entry(raw).id, /entry #1 id must be a non-empty string/],
+    ["memo missing", (raw) => delete entry(raw).memo, /entry JE-1 memo must be a string, got undefined/],
+    ["line account is a JSON number", (raw) => (line(raw).account = 1000), /JE-1 line 1 account must be a non-empty string, got 1000/],
+    ["debit is a JSON number", (raw) => (line(raw).debit = 100), /JE-1 line 1 debit must be a non-empty string, got 100/],
+    ["credit missing", (raw) => delete line(raw).credit, /JE-1 line 1 credit must be a non-empty string/],
+    ["line is not an object", (raw) => ((raw.journal_entries[0]!.lines as unknown[])[0] = null), /JE-1 line 1 must be an object/],
+  ])("rejects %s", (_name, mutate, message) => {
+    const raw = validRaw();
+    mutate(raw);
+    expect(() => loadLedger(raw)).toThrow(LedgerError);
+    expect(() => loadLedger(raw)).toThrow(message);
+  });
+
+  it("allows an empty memo", () => {
+    const raw = validRaw();
+    raw.journal_entries[0]!.memo = "";
+    expect(loadLedger(raw).entries[0]!.memo).toBe("");
+  });
 });

@@ -40,6 +40,7 @@ describe("GET /income-statement", () => {
   it.each([
     ["no params", ""],
     ["missing end", "?start=2026-01-01"],
+    ["empty values", "?start=&end="],
     ["malformed date", "?start=2026-1-1&end=2026-03-31"],
     ["impossible date", "?start=2026-01-01&end=2026-02-30"],
     ["start after end", "?start=2026-04-01&end=2026-03-31"],
