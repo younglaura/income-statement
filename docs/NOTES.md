@@ -3,9 +3,9 @@
 2026.01.01 to 2026.3.31
 
 ### Expected Output
-44,480.14
+-44,480.14
 ### Actual Output
-44,480.14
+-44,480.14
 
 ## Decisions & Assumptions
 Money:
